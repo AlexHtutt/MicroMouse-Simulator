@@ -21,26 +21,43 @@ void microMouseServer::studentAI()
  * void foundFinish();
  * void printUI(const char *mesg);
 */
-    int turns = 0;
-    int forward = 0;
-    if(isWallForward())
+    int Lturns = 0; //streak counter for left turns
+    int Rturns = 0; //streak counter for left turns
+    int forward = 0; //streak counter for left turns
+    while(Rturns != 3 && Lturns != 3) //end of maze is found when 3 left turns or right turns have been made in a row
     {
-        moveForward();
-        forward++;
-        if(forward == 2)
+        if(!isWallLeft()) //prioritize left turns
         {
-            turns = 0;
+            turnLeft();
+            Lturns++; //add 1 to left turn streak
+            forward = 0; //kill forward streak
+            Rturns = 0; //kill right turn streak
+        }
+        if(!isWallForward())
+        {
+            moveForward();
+            forward++;
+            if(forward == 2){ // if move forwards twice in a row, then kill streaks
+                Lturns = 0;
+                Rturns = 0;
+                forward = 0;
+            }
+        }
+        else if(!isWallRight())
+        {
+            turnRight();
+            Rturns++;
+            forward = 0;
+            Lturns = 0;
+        }
+        else // if cant go forward, turn right, or turn left, dead end - turn 180
+        {
+            turnLeft();
+            turnLeft();
+            Lturns = 0;
+            Rturns = 0;
+            forward = 0;
         }
     }
-    else
-    {
-        turnRight();
-        turns++;
-    }
-    if(turns == 2){
-        if(!moveForward())
-        {
-            void foundFinish();
-        }
-    }
+    foundFinish();
 }
